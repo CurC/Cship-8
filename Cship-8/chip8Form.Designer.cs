@@ -28,7 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.Canvas = new System.Windows.Forms.PictureBox();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.Canvas)).BeginInit();
             this.SuspendLayout();
             // 
@@ -37,9 +39,16 @@
             this.Canvas.Location = new System.Drawing.Point(0, 0);
             this.Canvas.Name = "Canvas";
             this.Canvas.Size = new System.Drawing.Size(640, 320);
+            this.Canvas.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.Canvas.TabIndex = 0;
             this.Canvas.TabStop = false;
             this.Canvas.Paint += new System.Windows.Forms.PaintEventHandler(this.Draw);
+            // 
+            // timer1
+            // 
+            this.timer1.Enabled = true;
+            this.timer1.Interval = 12;
+            this.timer1.Tick += new System.EventHandler(this.Cycle);
             // 
             // chip8Form
             // 
@@ -60,6 +69,7 @@
         #endregion
 
         private System.Windows.Forms.PictureBox Canvas;
+        private System.Windows.Forms.Timer timer1;
     }
 }
 
