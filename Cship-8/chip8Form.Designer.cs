@@ -1,6 +1,6 @@
 ﻿namespace Cship_8
 {
-    partial class MainForm
+    partial class chip8Form
     {
         /// <summary>
         /// Required designer variable.
@@ -28,36 +28,38 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.drawable = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.drawable)).BeginInit();
+            this.Canvas = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.Canvas)).BeginInit();
             this.SuspendLayout();
             // 
-            // drawable
+            // Canvas
             // 
-            this.drawable.Location = new System.Drawing.Point(0, 0);
-            this.drawable.Name = "drawable";
-            this.drawable.Size = new System.Drawing.Size(640, 320);
-            this.drawable.TabIndex = 0;
-            this.drawable.TabStop = false;
-            this.drawable.Paint += new System.Windows.Forms.PaintEventHandler(this.drawable_Paint);
+            this.Canvas.Location = new System.Drawing.Point(0, 0);
+            this.Canvas.Name = "Canvas";
+            this.Canvas.Size = new System.Drawing.Size(640, 320);
+            this.Canvas.TabIndex = 0;
+            this.Canvas.TabStop = false;
+            this.Canvas.Paint += new System.Windows.Forms.PaintEventHandler(this.Draw);
             // 
-            // MainForm
+            // chip8Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(640, 320);
-            this.Controls.Add(this.drawable);
+            this.Controls.Add(this.Canvas);
             this.Margin = new System.Windows.Forms.Padding(4, 20, 4, 20);
-            this.Name = "MainForm";
+            this.Name = "chip8Form";
             this.Text = "Cship-8";
-            ((System.ComponentModel.ISupportInitialize)(this.drawable)).EndInit();
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckKeyDown);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CheckKeyUp);
+            ((System.ComponentModel.ISupportInitialize)(this.Canvas)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.PictureBox drawable;
+        private System.Windows.Forms.PictureBox Canvas;
     }
 }
 

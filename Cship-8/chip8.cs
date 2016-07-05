@@ -10,7 +10,7 @@ namespace Cship_8
     {
         static void Main()
         {
-            Application.Run(new MainForm());
+            Application.Run(new chip8Form());
         }
     }
 }
