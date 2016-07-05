@@ -47,7 +47,7 @@
             // timer1
             // 
             this.timer1.Enabled = true;
-            this.timer1.Interval = 12;
+            this.timer1.Interval = 60;
             this.timer1.Tick += new System.EventHandler(this.Cycle);
             // 
             // chip8Form
@@ -59,6 +59,7 @@
             this.Margin = new System.Windows.Forms.Padding(4, 20, 4, 20);
             this.Name = "chip8Form";
             this.Text = "Cship-8";
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.Draw);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckKeyDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CheckKeyUp);
             ((System.ComponentModel.ISupportInitialize)(this.Canvas)).EndInit();

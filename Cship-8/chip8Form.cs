@@ -55,7 +55,7 @@ namespace Cship_8
 
         private void Cycle(object sender, EventArgs e)
         {
-            Ir.Cycle();
+            Ir.Cycle(this);
         }
 
         

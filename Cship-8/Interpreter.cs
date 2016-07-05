@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Cship_8
 {
@@ -38,10 +40,10 @@ namespace Cship_8
             }
         }
 
-        public void Cycle()
+        public void Cycle(chip8Form F)
         {
-            opcode = (ushort)(memory[pc] << 8 + memory[pc + 1]);
-
+            opcode = (ushort)(memory[pc] << 8 | memory[pc + 1]);
+            Debug.WriteLine("0x" + opcode.ToString("X"));
             // Opcode instruction interpreting
             switch (opcode & 0xF000)
             {
@@ -50,6 +52,7 @@ namespace Cship_8
                     {
                         case 0x00E0:
                             screenState = ScreenState.CLEAR;
+                            F.Invalidate();
                             break;
                         case 0x00EE:
                             pc = stack.Pop();
@@ -172,6 +175,7 @@ namespace Cship_8
                         }
                     }
                     screenState = ScreenState.DRAW;
+                    F.Invalidate();
                     break;
                 case 0xE000:
                     switch (opcode & 0x00FF)
@@ -243,6 +247,8 @@ namespace Cship_8
                             break;
                     }
                     break;
+                default:
+                    throw new System.ArgumentException("Unknown opcode: 0x" + opcode.ToString("X"));
             }
             // Each opcode is 2 bytes
             pc += 2;
