@@ -13,7 +13,7 @@ namespace Cship_8
     {
         int t;
         byte[] V, memory;
-        public ushort[] screen;
+        public ushort[,] screen;
         public int[] keys = new int[16];
         ushort I, pc, opcode;
         Stack<ushort> stack;
@@ -30,7 +30,7 @@ namespace Cship_8
             memory = new byte[0x1000];
             V = new byte[16];
             stack = new Stack<ushort>();
-            screen = new ushort[64 * 32];
+            screen = new ushort[64, 32];
             screenState = ScreenState.IDLE;
             LoadFile("../../Games/PONG");
 
@@ -42,6 +42,22 @@ namespace Cship_8
 
         public void Cycle(chip8Form F)
         {
+            // Delay timer
+            if (dtimer > 0)
+            {
+                dtimer--;
+            }
+
+            // Sound timer
+            if (stimer > 0)
+            {
+                if (stimer == 1)
+                {
+                    playsound = true;
+                }
+                stimer--;
+            }
+
             opcode = (ushort)(memory[pc] << 8 | memory[pc + 1]);
             Debug.WriteLine("0x" + opcode.ToString("X"));
             // Opcode instruction interpreting
@@ -56,30 +72,30 @@ namespace Cship_8
                             break;
                         case 0x00EE:
                             pc = stack.Pop();
-                            return;
+                            break;
                     }
                     break;
                 case 0x1000:
                     pc = (ushort)(opcode & 0x0FFF);
-                    break;
+                    return;
                 case 0x2000:
                     stack.Push(pc);
                     pc = (ushort)(opcode & 0x0FFF);
-                    break;
+                    return;
                 case 0x3000:
-                    if ((opcode & 0x0F00) >> 8 == (opcode & 0x00FF))
+                    if (V[(opcode & 0x0F00) >> 8] == (opcode & 0x00FF))
                     {
                         pc += 2;
                     }
                     break;
                 case 0x4000:
-                    if ((opcode & 0x0F00) >> 8 != (opcode & 0x00FF))
+                    if (V[(opcode & 0x0F00) >> 8] != (opcode & 0x00FF))
                     {
                         pc += 2;
                     }
                     break;
                 case 0x5000:
-                    if (V[opcode & 0x0F00] >> 8 == V[opcode & 0x00F0] >> 4)
+                    if (V[(opcode & 0x0F00) >> 8] == V[(opcode & 0x00F0) >> 4])
                     {
                         pc += 2;
                     }
@@ -88,7 +104,7 @@ namespace Cship_8
                     V[(opcode & 0x0F00) >> 8] = (byte)(opcode & 0x00FF);
                     break;
                 case 0x7000:
-                    V[(opcode & 0x0F00) >> 8] = (byte)((V[(opcode & 0x0F00) >> 8] + opcode) & 0x00FF);
+                    V[(opcode & 0x0F00) >> 8] = (byte)(V[(opcode & 0x0F00) >> 8] + (opcode & 0x00FF));
                     break;
                 case 0x8000:
                     switch (opcode & 0x000F)
@@ -107,17 +123,25 @@ namespace Cship_8
                             break;
                         case 0x0004:
                             t = V[(opcode & 0x0F00) >> 8] + V[(opcode & 0x00F0) >> 4];
-                            V[(opcode & 0x0F00) >> 8] = (byte)(t & 0x00FF);
-                            V[0x000F] = (byte)(t & 0x0F00);
+                            if (t > 0xFF)
+                            {
+                                t -= 0xFF;
+                                V[0x000F] = 0x1;
+                            }
+                            V[(opcode & 0x0F00) >> 8] = (byte) t;
                             break;
                         case 0x0005:
                             t = V[(opcode & 0x0F00) >> 8] - V[(opcode & 0x00F0) >> 4];
                             if (t < 0)
                             {
-                                t += 0x00FF;
-                                V[0x000F] = (byte)0x1;
+                                t += 0xFF;
+                                V[0x000F] = 0x0;
                             }
-                            V[(opcode & 0x0F00) >> 8] = (byte)(t & 0x00FF);
+                            else
+                            {
+                                V[0x000F] = 0x1;
+                            }
+                            V[(opcode & 0x0F00) >> 8] = (byte) t;
                             break;
                         case 0x0006:
                             V[0x000F] = (byte)(V[(opcode & 0x0F00) >> 8] & 0x0001);
@@ -128,9 +152,13 @@ namespace Cship_8
                             if (t < 0)
                             {
                                 t += 0x00FF;
-                                V[0x000F] = (byte)0x0001;
+                                V[0x000F] = 0x0;
                             }
-                            V[(opcode & 0x0F00) >> 8] = (byte)(t & 0x00FF);
+                            else
+                            {
+                                V[0x000F] = 0x1;
+                            }
+                            V[(opcode & 0x0F00) >> 8] = (byte) t;
                             break;
                         case 0x000E:
                             V[0x000F] = (byte)((V[(opcode & 0x0F00) >> 8] & 0x0080) >> 7);
@@ -139,7 +167,7 @@ namespace Cship_8
                     }
                     break;
                 case 0x9000:
-                    if (V[opcode & 0x0F00] >> 8 != V[opcode & 0x00F0] >> 4)
+                    if (V[(opcode & 0x0F00) >> 8] != V[(opcode & 0x00F0) >> 4])
                     {
                         pc += 2;
                     }
@@ -149,7 +177,7 @@ namespace Cship_8
                     break;
                 case 0xB000:
                     pc = (ushort)(opcode & 0x0FFF + V[0]);
-                    return;
+                    break;
                 case 0xC000:
                     int r = new Random().Next(255);
                     V[(opcode & 0x0F00) >> 8] = (byte)(new Random().Next(255) & (opcode & 0x00FF));
@@ -166,11 +194,11 @@ namespace Cship_8
                         {
                             if ((data & (0x80 >> col)) != 0)
                             {
-                                if (screen[col + V[X] + ((row + V[Y]) * 64)] == 1)
+                                if (screen[col + V[X], row + V[Y]] == 1)
                                 {
                                     V[0xF] = 1;
                                 }
-                                screen[col + V[X] + ((row + V[Y]) * 64)] ^= (char)1;
+                                screen[col + V[X], row + V[Y]] ^= (char)1;
                             }
                         }
                     }
@@ -252,22 +280,6 @@ namespace Cship_8
             }
             // Each opcode is 2 bytes
             pc += 2;
-
-            // Delay timer
-            if (dtimer > 0)
-            {
-                dtimer--;
-            }
-
-            // Sound timer
-            if (stimer > 0)
-            {
-                if (stimer == 1)
-                {
-                    playsound = true;
-                }
-                stimer--;
-            }
         }
 
         public void LoadFile(string filename)
