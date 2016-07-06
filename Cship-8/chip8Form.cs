@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace Cship_8
@@ -13,6 +10,7 @@ namespace Cship_8
     {
         Bitmap bm;
         Interpreter Ir;
+        Dictionary<Keys, int> mapping;
 
         public chip8Form()
         {
@@ -20,6 +18,7 @@ namespace Cship_8
             Ir = new Interpreter();
             bm = new Bitmap(640, 320);
             Canvas.Image = bm;
+            SetMapping();
         }
 
         private void Draw(object sender, PaintEventArgs e)
@@ -66,112 +65,40 @@ namespace Cship_8
             Ir.Cycle(this);
         }
 
+        public void SetMapping()
+        {
+            mapping = new Dictionary<Keys, int>
+            {
+                { Keys.D1, 0x1 },
+                { Keys.D2, 0x2 },
+                { Keys.D3, 0x3 },
+                { Keys.Q, 0x4 },
+                { Keys.W, 0x5 },
+                { Keys.E, 0x6 },
+                { Keys.A, 0x7 },
+                { Keys.S, 0x8 },
+                { Keys.D, 0x9 },
+                { Keys.Z, 0xA },
+                { Keys.X, 0x0 },
+                { Keys.C, 0xB },
+                { Keys.D4, 0xC },
+                { Keys.R, 0xD },
+                { Keys.F, 0xE },
+                { Keys.V, 0xF },
+            };
+        }
         private void CheckKeyDown(object sender, KeyEventArgs e)
         {
-            switch (e.KeyCode)
+            if (mapping.ContainsKey(e.KeyCode))
             {
-                case Keys.D1:
-                    Ir.keys[1] = 1;
-                    break;
-                case Keys.D2:
-                    Ir.keys[2] = 1;
-                    break;
-                case Keys.D3:
-                    Ir.keys[3] = 1;
-                    break;
-                case Keys.Q:
-                    Ir.keys[4] = 1;
-                    break;
-                case Keys.W:
-                    Ir.keys[5] = 1;
-                    break;
-                case Keys.E:
-                    Ir.keys[6] = 1;
-                    break;
-                case Keys.A:
-                    Ir.keys[7] = 1;
-                    break;
-                case Keys.S:
-                    Ir.keys[8] = 1;
-                    break;
-                case Keys.D:
-                    Ir.keys[9] = 1;
-                    break;
-                case Keys.Z:
-                    Ir.keys[10] = 1;
-                    break;
-                case Keys.X:
-                    Ir.keys[0] = 1;
-                    break;
-                case Keys.C:
-                    Ir.keys[11] = 1;
-                    break;
-                case Keys.D4:
-                    Ir.keys[12] = 1;
-                    break;
-                case Keys.R:
-                    Ir.keys[13] = 1;
-                    break;
-                case Keys.F:
-                    Ir.keys[14] = 1;
-                    break;
-                case Keys.V:
-                    Ir.keys[15] = 1;
-                    break;
+                Ir.keys[mapping[e.KeyCode]] = 1;
             }
         }
         private void CheckKeyUp(object sender, KeyEventArgs e)
         {
-            switch (e.KeyCode)
+            if (mapping.ContainsKey(e.KeyCode))
             {
-                case Keys.D1:
-                    Ir.keys[1] = 0;
-                    break;
-                case Keys.D2:
-                    Ir.keys[2] = 0;
-                    break;
-                case Keys.D3:
-                    Ir.keys[3] = 0;
-                    break;
-                case Keys.Q:
-                    Ir.keys[4] = 0;
-                    break;
-                case Keys.W:
-                    Ir.keys[5] = 0;
-                    break;
-                case Keys.E:
-                    Ir.keys[6] = 0;
-                    break;
-                case Keys.A:
-                    Ir.keys[7] = 0;
-                    break;
-                case Keys.S:
-                    Ir.keys[8] = 0;
-                    break;
-                case Keys.D:
-                    Ir.keys[9] = 0;
-                    break;
-                case Keys.Z:
-                    Ir.keys[10] = 0;
-                    break;
-                case Keys.X:
-                    Ir.keys[0] = 0;
-                    break;
-                case Keys.C:
-                    Ir.keys[11] = 0;
-                    break;
-                case Keys.D4:
-                    Ir.keys[12] = 0;
-                    break;
-                case Keys.R:
-                    Ir.keys[13] = 0;
-                    break;
-                case Keys.F:
-                    Ir.keys[14] = 0;
-                    break;
-                case Keys.V:
-                    Ir.keys[15] = 0;
-                    break;
+                Ir.keys[mapping[e.KeyCode]] = 0;
             }
         }
     }

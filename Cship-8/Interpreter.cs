@@ -59,7 +59,6 @@ namespace Cship_8
             }
 
             opcode = (ushort)(memory[pc] << 8 | memory[pc + 1]);
-            Debug.WriteLine("0x" + opcode.ToString("X"));
             // Opcode instruction interpreting
             switch (opcode & 0xF000)
             {
@@ -237,7 +236,7 @@ namespace Cship_8
                                     if (keys[i] == 1)
                                     {
                                         wait = false;
-                                        V[(opcode & 0x0F00) >> 8] = (byte)i;
+                                        V[(opcode & 0x0F00) >> 8] = (byte) i;
                                         break;
                                     }
                                 }
